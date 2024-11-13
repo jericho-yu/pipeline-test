@@ -1,0 +1,88 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1385.vb_58b_86ea_fff1">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>7</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
+    <script>pipeline{
+    agent {
+        label &apos;master&apos;
+    }
+
+    environment {
+        hello = &quot;123456&quot;
+        world = &quot;456789&quot;
+        WS_main = &quot;${WORKSPACE}&quot;
+        CONTAINER_NAME = &quot;cbit_centos&quot;
+        IMAGE_VERSION = &quot;v1.0&quot;
+    }
+
+    stages {
+        //流水线的所有阶段
+        stage(&apos;代码拉取-linux&apos;){
+            steps{
+                git branch: &apos;1.14.0&apos;, credentialsId: &apos;58727e1e-4acd-490d-a8c5-e526b1843e07&apos;, url: &apos;https://git.code.tencent.com/cbit/cbit-sql.git&apos;
+            }
+        }
+        stage(&apos;环境检查&apos;){
+            steps {
+                sh &apos;printenv&apos;
+                echo &quot;正在检测基本信息&quot;
+                sh &apos;java -version&apos;
+                sh &apos;git --version&apos;
+                sh &apos;docker version&apos;
+                sh &apos;pwd &amp;&amp; ls -alh&apos;
+                sh &quot;echo $hello&quot;
+            }
+        }
+        //1、编译 &quot;abc&quot;
+        stage(&apos;rust编译-linux&apos;){
+            agent {
+                docker {
+                    args &apos; -v /home/mount_data/jenkins/cargo/config:/root/.cargo/config&apos;
+                    image &apos;cbit-rust:1.0&apos;
+                    args &apos;-v /home/cicd-data/rust-cache:/root/.cargo/registry/cache/mirrors.ustc.edu.cn-12df342d903acd47 -v /home/cicd-data/rust-index-cache:/root/.cargo/registry/index/mirrors.ustc.edu.cn-12df342d903acd47/.cache&apos;
+                }
+            }
+            steps {
+                echo &quot;正在进行rust编译&quot;
+                sh &quot;&quot;&quot;
+                     docker exec ${CONTAINER_NAME} bash -c &apos;
+                        ldd --version;
+                        source /etc/profile;
+                        gcc --version;
+                        cargo --version;
+                        cd /opt/rust/;
+                        cargo build --release;
+                        /opt/rust/target/release/cbit-sql -v;
+                        curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cbit-sql http://172.16.80.10:30009/repository/rust-hosted/cbit-sql-centos7;
+                        curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cli http://172.16.80.10:30009/repository/rust-hosted/cli-centos7;
+                    &apos;
+                &quot;&quot;&quot;
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
