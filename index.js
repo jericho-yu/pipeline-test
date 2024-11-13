@@ -19,7 +19,7 @@ async function main() {
 	}
 
 	// 构建
-	let level = 0;
+	let level = 1;
 	let content = '';
 
 	content = generatePipelineScript(fileContent, level);
