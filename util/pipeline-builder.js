@@ -47,7 +47,7 @@ export const generatePipeline = (content, level = 1) => {
 export const generatePipelineStages = (contents = [], level = 1) => {
 	let stagesContents = collect([]);
 
-	stagesContents.push(`${tabs(level)} stages {`);
+	stagesContents.push(`${tabs(level)}stages {`);
 
 	collect(contents).each(content => {
 		if (content?.comment) stagesContents.push(`${tabs(level + 1)}// ${content.comment}`);

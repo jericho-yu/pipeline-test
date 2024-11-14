@@ -39,10 +39,9 @@ async function main() {
 	try {
 		const fileContentJson = await fs.readFile('./config.json', 'utf8');
 		let fileContent = JSON.parse(fileContentJson);  // 解析json字符串
-		// 构建pipeline脚本
-		let level = 1;
 
-		let content = generatePipeline(fileContent, level);
+		// 构建pipeline脚本
+		let content = generatePipeline(fileContent);
 
 		// 保存文本到文件
 		await fs.writeFile('./pipeline.xml', `${xmlStart}${content}${xmlEnd}`, 'utf8');
