@@ -65,7 +65,7 @@
             steps {
                 echo &quot;正在进行rust编译&quot;
                 sh &quot;&quot;&quot;
-                     docker exec ${CONTAINER_NAME} bash -c &apos;
+                    docker exec ${CONTAINER_NAME} bash -c &apos;
                         ldd --version;
                         source /etc/profile;
                         gcc --version;

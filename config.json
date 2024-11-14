@@ -15,27 +15,31 @@
 			"comment": "流水线的所有阶段",
 			"steps": [
 				{
-					"type": "step",
+					"type": "steps",
 					"commands": [
 						"git branch: &apos;1.14.0&apos;, credentialsId: &apos;58727e1e-4acd-490d-a8c5-e526b1843e07&apos;, url: &apos;https://git.code.tencent.com/cbit/cbit-sql.git&apos;"
 					]
 				}
-			],
-			"docker":[]
+			]
 		},
 		{
-			"name":"&apos;环境检查&apos;",
+			"name": "&apos;环境检查&apos;",
 			"comment": "",
-			"commands":[
-				"sh &apos;printenv&apos;",
-                "echo &quot;正在检测基本信息&quot;",
-                "sh &apos;java -version&apos;",
-                "sh &apos;git --version&apos;",
-                "sh &apos;docker version&apos;",
-                "sh &apos;pwd &amp;&amp; ls -alh&apos;",
-                "sh &quot;echo $hello&quot;"
-			],
-			"docker":[]
+			"steps": [
+				{
+					"type": "steps",
+					"commands": [
+						"sh &apos;printenv&apos;",
+						"echo &quot;正在检测基本信息&quot;",
+						"sh &apos;java -version&apos;",
+						"sh &apos;git --version&apos;",
+						"sh &apos;docker version&apos;",
+						"sh &apos;pwd &amp;&amp; ls -alh&apos;",
+						"sh &quot;echo $hello&quot;"
+					],
+					"docker": []
+				}
+			]
 		},
 		{
 			"name": "&apos;rust编译-linux&apos;",
@@ -44,19 +48,19 @@
 				{
 					"type": "agent",
 					"commands": [],
-					"docker":[
+					"docker": [
 						"args &apos; -v /home/mount_data/jenkins/cargo/config:/root/.cargo/config&apos;",
 						"image &apos;cbit-rust:1.0&apos;",
 						"args &apos;-v /home/cicd-data/rust-cache:/root/.cargo/registry/cache/mirrors.ustc.edu.cn-12df342d903acd47 -v /home/cicd-data/rust-index-cache:/root/.cargo/registry/index/mirrors.ustc.edu.cn-12df342d903acd47/.cache&apos;"
 					]
 				},
 				{
-					"type": "step",
+					"type": "steps",
 					"commands": [
 						"echo &quot;正在进行rust编译&quot;",
-						"sh &quot;&quot;&quot;\ndocker exec ${CONTAINER_NAME} bash -c &apos;\nldd --version;\nsource /etc/profile;\ngcc --version;\ncargo --version;\ncd /opt/rust/;\ncargo build --release;\n/opt/rust/target/release/cbit-sql -v;\ncurl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cbit-sql \nhttp:\/\/172.16.80.10:30009/repository/rust-hosted/cbit-sql-centos7;\ncurl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cli\nhttp:\/\/172.16.80.10:30009/repository/rust-hosted/cli-centos7;\n&apos;\n&quot;&quot;&quot;"
+						"sh &quot;&quot;&quot;\n\t\t\t\t\tdocker exec ${CONTAINER_NAME} bash -c &apos;\n\t\t\t\t\tldd --version;\n\t\t\t\t\tsource /etc/profile;\n\t\t\t\t\tgcc --version;\n\t\t\t\t\tcargo --version;\n\t\t\t\t\tcd /opt/rust/;\n\t\t\t\t\tcargo build --release;\n\t\t\t\t\t/opt/rust/target/release/cbit-sql -v;\n\t\t\t\t\tcurl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cbit-sql http:\/\/172.16.80.10:30009/repository/rust-hosted/cbit-sql-centos7;\n\t\t\t\t\tcurl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cli http:\/\/172.16.80.10:30009/repository/rust-hosted/cli-centos7;\n\t\t\t\t&apos;\n\t\t\t\t&quot;&quot;&quot;"
 					],
-					"docker":[]
+					"docker": []
 				}
 			]
 		}

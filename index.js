@@ -1,30 +1,24 @@
-import readJsonFile from './util/file.js';
-import { must } from './util/parse.js';
-import { generatePipelineScript } from './util/builder.js';
+import { generatePipeline } from './util/pipeline-builder.js';
+import fs from 'fs/promises';
 
 
 async function main() {
 	// 读取文件
-	const fileContentJson = await readJsonFile();
-	if (!fileContentJson) {
-		console.log('Error reading file');
+	try {
+		const fileContentJson = await fs.readFile('./config.json', 'utf8');
+		let fileContent = JSON.parse(fileContentJson);  // 解析json字符串
+		// 构建pipeline脚本
+		let level = 1;
+
+		let content = generatePipeline(fileContent, level);
+
+		// 保存文本到文件
+		await fs.writeFile('./pipeline', content, 'utf8');
+		console.log('Pipeline script saved to pipeline.txt');
+	} catch (err) {
+		console.error("Error reading file"+err)
 		return;
 	}
-	let fileContent = JSON.parse(fileContentJson);  // 解析json字符串
-
-	// 验证文件格式与内容是否正确
-	let { err, msg } = must(fileContent);
-	if (err) {
-		console.error(msg);
-	}
-
-	// 构建
-	let level = 1;
-	let content = '';
-
-	content = generatePipelineScript(fileContent, level);
-
-	console.log(content);
 }
 
 main();
