@@ -1,6 +1,9 @@
 import { generatePipeline } from './util/pipeline-builder.js';
+import fs from 'fs/promises';
 
-let xmlStart = `<?xml version='1.1' encoding='UTF-8'?>
+
+async function main() {
+	let xmlStart = `<?xml version='1.1' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@1385.vb_58b_86ea_fff1">
   <actions>
     <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2151.ve32c9d209a_3f"/>
@@ -25,17 +28,29 @@ let xmlStart = `<?xml version='1.1' encoding='UTF-8'?>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3826.v3b_5707fe44da_">
     <script>`;
-let xmlEnd = `</script>
+	let xmlEnd = `</script>
     <sandbox>true</sandbox>
   </definition>
   <triggers/>
   <disabled>false</disabled>
 </flow-definition>`;
 
-// json -> pipeline
-export const toPipeline = (jsonContent = {}) => {
-	let level = 1;
-	let content = generatePipeline(fileContent, level);
+	// 读取文件
+	try {
+		const fileContentJson = await fs.readFile('./config.json', 'utf8');
+		let fileContent = JSON.parse(fileContentJson);  // 解析json字符串
+		// 构建pipeline脚本
+		let level = 1;
 
-	return `${xmlStart}${content}${xmlEnd}`;
-};
+		let content = generatePipeline(fileContent, level);
+
+		// 保存文本到文件
+		await fs.writeFile('./pipeline.xml', `${xmlStart}${content}${xmlEnd}`, 'utf8');
+		console.log('Pipeline script saved to pipeline.xml');
+	} catch (err) {
+		console.error("Error reading file" + err)
+		return;
+	}
+}
+
+main();
