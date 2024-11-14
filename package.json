@@ -1,15 +1,24 @@
 {
-	"type":"module",
-	"name": "pipeline-test",
+	"type": "module",
+	"name": "pipeline-builder",
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
+		"build": "webpack",
 		"dev": "node index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jericho-yu/pipeline-test.git"
+	},
+	"keywords": [
+		"pipeline",
+		"json",
+		"jenkins"
+	],
+	"author": "jericho-yu",
+	"license": "MIT",
 	"description": "",
 	"dependencies": {
 		"collect.js": "^4.36.1"
