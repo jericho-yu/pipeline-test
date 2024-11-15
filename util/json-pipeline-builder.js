@@ -6,7 +6,7 @@ import { collect } from 'collect.js';
  * @param {int} level 缩进等级
  * @returns string
  */
-export const writeString = (content, level = 0) => {
+const writeString = (content, level = 0) => {
 	return `${'\t'.repeat(level)}${content}\n`;
 }
 
@@ -21,7 +21,7 @@ const tabs = (level) => {
  * @param {int} level 缩进等级
  * @returns ret
  */
-export const generatePipeline = (content, level = 1) => {
+export const generatePipeline = async (content, level = 1) => {
 	if (!content?.agent) return 'not exist item "agent"';
 	if (!content?.environment) return 'not exist item "environment"';
 	if (!content?.stages) return 'not exist item "stages"';
@@ -29,8 +29,8 @@ export const generatePipeline = (content, level = 1) => {
 	let pipeline = [];
 	pipeline.push('pipeline {');
 
-	pipeline.push(generatePipelineAgent(content.agent, level)+"\n");
-	pipeline.push(generatePipelineEnvironment(content.environment, level)+"\n");
+	pipeline.push(generatePipelineAgent(content.agent, level) + "\n");
+	pipeline.push(generatePipelineEnvironment(content.environment, level) + "\n");
 	pipeline.push(generatePipelineStages(content.stages, level));
 
 	pipeline.push('}');
