@@ -1,6 +1,7 @@
 pipeline {
 	agent {
 		label &apos;master&apos;
+		label2 &apos;master&apos;
 	}
 
 	environment {
