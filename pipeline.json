@@ -1,1 +1,247 @@
-[{"content":"pipeline {","children":[{"content":"agent {","children":[{"content":"label &apos;master&apos;","children":[]},{"content":"label2 &apos;master&apos;","children":[]}]},{"content":"}","children":[]},{"content":"environment {","children":[{"content":"hello = &quot;123456&quot;","children":[]},{"content":"world = &quot;456789&quot;","children":[]},{"content":"WS_main = &quot;${WORKSPACE}&quot;","children":[]},{"content":"CONTAINER_NAME = &quot;cbit_centos&quot;","children":[]},{"content":"IMAGE_VERSION = &quot;v1.0&quot;","children":[]}]},{"content":"}","children":[]},{"content":"stages {","children":[{"content":"// 流水线的所有阶段","children":[]},{"content":"stage(&apos;代码拉取-linux&apos;){","children":[{"content":"steps {","children":[{"content":"git branch: &apos;1.14.0&apos;, credentialsId: &apos;58727e1e-4acd-490d-a8c5-e526b1843e07&apos;, url: &apos;https://git.code.tencent.com/cbit/cbit-sql.git&apos;","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]},{"content":"stage(&apos;环境检查&apos;){","children":[{"content":"steps {","children":[{"content":"sh &apos;printenv&apos;","children":[]},{"content":"echo &quot;正在检测基本信息&quot;","children":[]},{"content":"sh &apos;java -version&apos;","children":[]},{"content":"sh &apos;git --version&apos;","children":[]},{"content":"sh &apos;docker version&apos;","children":[]},{"content":"sh &apos;pwd &amp;&amp; ls -alh&apos;","children":[]},{"content":"sh &quot;echo $hello&quot;","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]},{"content":"// 1、编译 &quot;abc&quot;","children":[]},{"content":"stage(&apos;rust编译-linux&apos;){","children":[{"content":"agent {","children":[{"content":"docker {","children":[{"content":"args &apos; -v /home/mount_data/jenkins/cargo/config:/root/.cargo/config&apos;","children":[]},{"content":"image &apos;cbit-rust:1.0&apos;","children":[]},{"content":"args &apos;-v /home/cicd-data/rust-cache:/root/.cargo/registry/cache/mirrors.ustc.edu.cn-12df342d903acd47 -v /home/cicd-data/rust-index-cache:/root/.cargo/registry/index/mirrors.ustc.edu.cn-12df342d903acd47/.cache&apos;","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]},{"content":"steps {","children":[{"content":"echo &quot;正在进行rust编译&quot;","children":[]},{"content":"sh &quot;&quot;&quot;","children":[{"content":"docker exec ${CONTAINER_NAME} bash -c &apos;","children":[]},{"content":"ldd --version;","children":[]},{"content":"source /etc/profile;","children":[]},{"content":"gcc --version;","children":[]},{"content":"cargo --version;","children":[]},{"content":"cd /opt/rust/;","children":[]},{"content":"cargo build --release;","children":[]},{"content":"/opt/rust/target/release/cbit-sql -v;","children":[]},{"content":"curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cbit-sql http://172.16.80.10:30009/repository/rust-hosted/cbit-sql-centos7;","children":[]},{"content":"curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cli http://172.16.80.10:30009/repository/rust-hosted/cli-centos7;","children":[]}]},{"content":"&apos;","children":[]},{"content":"&quot;&quot;&quot;","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]}]},{"content":"}","children":[]}]
+[
+	{
+		"content": "pipeline {",
+		"children": [
+			{
+				"content": "agent {",
+				"children": [
+					{
+						"content": "label &apos;master&apos;",
+						"children": []
+					},
+					{
+						"content": "label2 &apos;master&apos;",
+						"children": []
+					}
+				]
+			},
+			{
+				"content": "}",
+				"children": []
+			},
+			{
+				"content": "environment {",
+				"children": [
+					{
+						"content": "hello = &quot;123456&quot;",
+						"children": []
+					},
+					{
+						"content": "world = &quot;456789&quot;",
+						"children": []
+					},
+					{
+						"content": "WS_main = &quot;${WORKSPACE}&quot;",
+						"children": []
+					},
+					{
+						"content": "CONTAINER_NAME = &quot;cbit_centos&quot;",
+						"children": []
+					},
+					{
+						"content": "IMAGE_VERSION = &quot;v1.0&quot;",
+						"children": []
+					}
+				]
+			},
+			{
+				"content": "}",
+				"children": []
+			},
+			{
+				"content": "stages {",
+				"children": [
+					{
+						"content": "// 流水线的所有阶段",
+						"children": []
+					},
+					{
+						"content": "stage(&apos;代码拉取-linux&apos;){",
+						"children": [
+							{
+								"content": "steps {",
+								"children": [
+									{
+										"content": "git branch: &apos;1.14.0&apos;, credentialsId: &apos;58727e1e-4acd-490d-a8c5-e526b1843e07&apos;, url: &apos;https://git.code.tencent.com/cbit/cbit-sql.git&apos;",
+										"children": []
+									}
+								]
+							},
+							{
+								"content": "}",
+								"children": []
+							}
+						]
+					},
+					{
+						"content": "}",
+						"children": []
+					},
+					{
+						"content": "stage(&apos;环境检查&apos;){",
+						"children": [
+							{
+								"content": "steps {",
+								"children": [
+									{
+										"content": "sh &apos;printenv&apos;",
+										"children": []
+									},
+									{
+										"content": "echo &quot;正在检测基本信息&quot;",
+										"children": []
+									},
+									{
+										"content": "sh &apos;java -version&apos;",
+										"children": []
+									},
+									{
+										"content": "sh &apos;git --version&apos;",
+										"children": []
+									},
+									{
+										"content": "sh &apos;docker version&apos;",
+										"children": []
+									},
+									{
+										"content": "sh &apos;pwd &amp;&amp; ls -alh&apos;",
+										"children": []
+									},
+									{
+										"content": "sh &quot;echo $hello&quot;",
+										"children": []
+									}
+								]
+							},
+							{
+								"content": "}",
+								"children": []
+							}
+						]
+					},
+					{
+						"content": "}",
+						"children": []
+					},
+					{
+						"content": "// 1、编译 &quot;abc&quot;",
+						"children": []
+					},
+					{
+						"content": "stage(&apos;rust编译-linux&apos;){",
+						"children": [
+							{
+								"content": "agent {",
+								"children": [
+									{
+										"content": "docker {",
+										"children": [
+											{
+												"content": "args &apos; -v /home/mount_data/jenkins/cargo/config:/root/.cargo/config&apos;",
+												"children": []
+											},
+											{
+												"content": "image &apos;cbit-rust:1.0&apos;",
+												"children": []
+											},
+											{
+												"content": "args &apos;-v /home/cicd-data/rust-cache:/root/.cargo/registry/cache/mirrors.ustc.edu.cn-12df342d903acd47 -v /home/cicd-data/rust-index-cache:/root/.cargo/registry/index/mirrors.ustc.edu.cn-12df342d903acd47/.cache&apos;",
+												"children": []
+											}
+										]
+									},
+									{
+										"content": "}",
+										"children": []
+									}
+								]
+							},
+							{
+								"content": "}",
+								"children": []
+							},
+							{
+								"content": "steps {",
+								"children": [
+									{
+										"content": "echo &quot;正在进行rust编译&quot;",
+										"children": []
+									},
+									{
+										"content": "sh &quot;&quot;&quot;",
+										"children": [
+											{
+												"content": "docker exec ${CONTAINER_NAME} bash -c &apos;",
+												"children": []
+											},
+											{
+												"content": "ldd --version;",
+												"children": []
+											},
+											{
+												"content": "source /etc/profile;",
+												"children": []
+											},
+											{
+												"content": "gcc --version;",
+												"children": []
+											},
+											{
+												"content": "cargo --version;",
+												"children": []
+											},
+											{
+												"content": "cd /opt/rust/;",
+												"children": []
+											},
+											{
+												"content": "cargo build --release;",
+												"children": []
+											},
+											{
+												"content": "/opt/rust/target/release/cbit-sql -v;",
+												"children": []
+											},
+											{
+												"content": "curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cbit-sql http://172.16.80.10:30009/repository/rust-hosted/cbit-sql-centos7;",
+												"children": []
+											},
+											{
+												"content": "curl -u &quot;admin:123456&quot; -X PUT -v -T /opt/rust/target/release/cli http://172.16.80.10:30009/repository/rust-hosted/cli-centos7;",
+												"children": []
+											}
+										]
+									},
+									{
+										"content": "&apos;",
+										"children": []
+									},
+									{
+										"content": "&quot;&quot;&quot;",
+										"children": []
+									}
+								]
+							},
+							{
+								"content": "}",
+								"children": []
+							}
+						]
+					},
+					{
+						"content": "}",
+						"children": []
+					}
+				]
+			},
+			{
+				"content": "}",
+				"children": []
+			}
+		]
+	},
+	{
+		"content": "}",
+		"children": []
+	}
+]

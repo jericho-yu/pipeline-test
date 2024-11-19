@@ -140,48 +140,73 @@ const blockToJsonEnvironment = (block) => {
  * @param {array} block 
  * @returns 
  */
-const blockToJsonStages = (block) => {
+const blockToJsonStages = (block, type = "") => {
 	let stages = [];
-	collect(block)
-		.each(item => {
-			let stage = { name: "", comment: "", steps: [] };
-			if (item.content.startsWith("//")) {
-				let match = item.content.match(/\/\/(.*)/);
-				if (match?.length > 1) stage.comment = match[1].trim();
-			}
-			if (item.content.startsWith("stage")) {
-				let match = item.content.match(/stage\(['"](.+?)['"]\)/);
-				if (match?.length > 1) stage.name = match[1].trim();
 
-				if (item?.children) {
-					collect(item.children).each(step => {
-						let s = { type: "steps", commands: [], docker: [] };
-						if (step.content.startsWith("steps")) {
-							collect(step.children).each(i => {
-								s.commands.push(i.content);
-								collect(i.children).each(i2 => {
-									s.commands.push(i2.content);
-								});
-							});
-						}
+	switch (type) {
+		default: {
+			collect(block)
+				.each(item => {
+					let stage = { name: "", comment: "", steps: [] };
+					if (item.content.startsWith("//")) {
+						let match = item.content.match(/\/\/(.*)/);
+						if (match?.length > 1) stage.comment = match[1].trim();
+					}
+					if (item.content.startsWith("stage")) {
+						let match = item.content.match(/stage\(['"](.+?)['"]\)/);
+						if (match?.length > 1) stage.name = match[1].trim();
 
-						if (step.content.startsWith("agent")) {
-							collect(step.children).each(i => {
-								if (i.content.startsWith("docker")) {
-									collect(i.children).each(i2 => {
-										s.docker.push(i2.content);
+						if (item?.children) {
+							collect(item.children).each(step => {
+								let s = { type: "steps", commands: [], docker: [] };
+								if (step.content.startsWith("steps")) {
+									collect(step.children).each(i => {
+										s.commands.push(i.content);
+										collect(i.children).each(i2 => {
+											s.commands.push(i2.content);
+										});
 									});
 								}
+
+								if (step.content.startsWith("agent")) _agent(step.children);
+
+
+								stage.steps.push(s);
 							});
 						}
+					}
 
-						stage.steps.push(s);
-					});
-				}
-			}
+					stages.push(stage);
+				});
+		}
+	}
 
-			stages.push(stage);
-		});
 
 	return stages;
+};
+
+const _step = (block, level = 1) => {
+	let ret = {
+		type: "step",
+		commands: [],
+		docker: [],
+	};
+
+	collect(block.children).each(val => {
+		ret.commands.push(val.content);
+		
+	});
+}
+
+const _agent = (block) => {
+	let ret = {
+		type: "agent",
+		commends: [],
+		docker: [],
+	};
+	collect(block.children).each(val => {
+		if (val.content.startsWith("docker")) collect(block).each(val => docker.push(val.content));
+	});
+
+	return ret;
 };
